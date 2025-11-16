@@ -9,7 +9,7 @@ const app = express()
 const mongoose = require('mongoose')
 // declare database connection string (URL)
 // const database_url = "mongodb://localhost:27017/vocab_builder"
-const cloud_db = "mongodb+srv://tuanphamdk504:vinh2k30@mydbcluster.fakucer.mongodb.net/"
+const cloud_db = "mongodb+srv://tuanphamdk504:vinh2k30@mydbcluster.fakucer.mongodb.net/vocab_builder"
 // connect to db
 mongoose.connect(cloud_db)
 //connect succeed
@@ -26,14 +26,14 @@ const cors = require('cors')
 //option 1: enable CORS for all client (public : short but unsecured)
 // app.user(cors())
 // option 2: enable CORS for specific client (private - longer code but more secured)
-const corsOption = {
-    // A: only 1 origin (URL)
-    origin: "http://localhost:8080", // allow on this origin
-    // B: many origins
-    // origin: ["http://localhost:8080, https://vocab-client.com"]
-    optionSuccessStatus: 200 // for legacy browser supper
-}
-app.use(cors(corsOption));
+// const corsOption = {
+//     // A: only 1 origin (URL)
+//     origin: "http://localhost:8080", // allow on this origin
+//     // B: many origins
+//     // origin: ["http://localhost:8080, https://vocab-client.com"]
+//     optionSuccessStatus: 200 // for legacy browser supper
+// }
+// app.use(cors(corsOption));
 // route (router)
 //import route
 const router =  require('./api/routes/vocabRoute')
