@@ -9,7 +9,7 @@ const app = express()
 const mongoose = require('mongoose')
 // declare database connection string (URL)
 // const database_url = "mongodb://localhost:27017/vocab_builder"
-const cloud_db = "mongodb+srv://tuanphamdk504:vinh2k30@mydbcluster.fakucer.mongodb.net/vocab_builder"
+const cloud_db = "mongodb+srv://tuanphamdk504:vinh2k30@mydbcluster.fakucer.mongodb.net/test"
 // connect to db
 mongoose.connect(cloud_db)
 //connect succeed
