@@ -1,105 +1,116 @@
-// import model
-const { model } = require('mongoose')
+const{model} = require('mongoose')
 const vocabModel = require('../models/vocabModel')
+const mongoose = require('mongoose')
 
-// implement API(business logic)
-const viewAllVocabs = async(req, res) =>{
+const viewAllVocabs = async(req,res) => {
     try{
-        //get vocab data and save to an array
-        const vocabs = await vocabModel.find({})
+        const vocabs = await vocabModel.find({owner:req.userId})
         res.status(200).json(vocabs)
-    } catch (err){
+    } catch(err){
         console.error(err)
     }
 }
-const createNewVocab = async(req, res) =>{
+
+const createNewVocab = async(req,res) =>{
     try{
-        //get vocab data and save to an array
-        const vocabs = await vocabModel.create(req.body)
+        const vocabs = await vocabModel.create({...req.body, owner:req.userId}) // ... de cho ca owner vao req.body
         res.status(200).json(vocabs)
-    } catch (err){
+    } catch(err){
         console.error(err)
     }
 }
-const deleteAllVocab = async(req, res) =>{
+// dùng const để lưu kq khai báo biến
+const deleteAllVocab = async(req,res) =>{
     try{
-        //get vocab data and save to an array
         await vocabModel.deleteMany()
-        res.json({"message":"delete all vocab succeed!"})
-
+        res.json({"message":"delete all vocab successful"})
     } catch (err){
         console.error(err)
     }
 }
 
-const getAllVocabById = async(req, res) =>{
+const deleteVocabById = async(req,res) => {
     try{
-        //get vocab data and save to an array
-        const id = req.params.id
-        const vocab = await vocabModel.findById(id)
-        res.status(200).json(vocab)
-
-    } catch (err){
-        console.error(err)
-    }
-}
-const updateVocab = async(req, res) =>{
-    try{
-        //get vocab data and save to an array
-        const id = req.params.id
-        const body = req.body
-        await vocabModel.findByIdAndUpdate(id,body, { new: true })
-        res.json({"message":"update vocab successful"})
-
-    } catch (err){
-        console.error(err)
-    }
-}
-const deleteVocabById = async(req, res) =>{
-    try{
-        //get vocab data and save to an array
-        const id = req.params.id
-        await vocabModel.findByIdAndDelete(id)
+        await vocabModel.findByIdAndDelete(req.params.id)
         res.json({"message":"delete vocab successful"})
+    }catch (err){
+        console.error(err)
+    }
+}
 
-    } catch (err){
+const getAllVocabById = async(req,res) =>{
+    try{
+    const vocabs = await vocabModel.findById(req.params.id)
+    res.status(200).json(vocabs)
+    }catch (err){
         console.error(err)
     }
 }
-const searchVocabByName = async(req, res) =>{
-    try{
-        //get vocab data and save to an array
-        const keyword = req.params.keyword
-        const vocab = await vocabModel.find([
-            {english : new RegExp(keyword, "i")},
-            {german : new RegExp(keyword, "i")}
-        ]
-        )
-        res.status(200).json(vocab)
 
-    } catch (err){
-        console.error(err)
-    }
-}
-const sortVocabAsc = async(req, res) =>{
+const updateVocab = async(req,res) => {
     try{
-        //get vocab data and save to an array
-        const vocab = await vocabModel.find().sort({_id : 1});
-        res.status(200).json(vocab)
-    } catch (err){
-        console.error(err)
+    await vocabModel.findByIdAndUpdate(req.params.id,req.body, {new:true})
+    res.json({"message":"update vocab successful"})
+    }catch(err){
+            console.error(err)
     }
 }
-const sortVocabDesc = async(req, res) =>{
+
+const testByMode = async(req,res) => {
     try{
-        //get vocab data and save to an array
-        const vocab = await vocabModel.find().sort({german : -1});
-        res.status(200).json(vocab)
-    } catch (err){
-        console.error(err)
+        const mode = req.query.mode || "english-to-german";
+        const limit = Number(req.query.limit) || 5;
+
+        const allVocabs = await vocabModel.find({
+            owner:req.userId
+        });
+
+        if (allVocabs.length === 0) {
+            return res.status(400).json({ error: "You don't have any vocabulary yet." });
+        }
+
+        const realLimit = Math.min(limit, allVocabs.length);
+        const selected = allVocabs
+            .sort(() => Math.random() - 0.5)
+            .slice(0, realLimit);
+
+        const result = selected.map(v => {
+            
+            if (mode === "german-to-english") {
+                return { id: v._id, question: v.german, answer: v.english };
+            }
+
+            if (mode === "english-to-german") {
+                return { id: v._id, question: v.english, answer: v.german };
+            }
+
+            // NEW MODES for Vietnamese
+            if (mode === "english-to-vietnamese") {
+                return { id: v._id, question: v.english, answer: v.vietnamese };
+            }
+
+            if (mode === "vietnamese-to-english") {
+                return { id: v._id, question: v.vietnamese, answer: v.english };
+            }
+
+            // fallback
+            return { id: v._id, question: v.english, answer: v.german };
+        });
+
+        res.json({
+            requested: limit,
+            returned: result.length,
+            mode,
+            vocabs: result
+        })
+
+    }catch(err){
+        console.error(err);
+        res.status(500).json({error:"Server error"})
     }
 }
-// export API at last 
+
+
 module.exports = {
     viewAllVocabs,
     createNewVocab,
@@ -107,7 +118,5 @@ module.exports = {
     getAllVocabById,
     updateVocab,
     deleteVocabById,
-    searchVocabByName,
-    sortVocabAsc,
-    sortVocabDesc
+    testByMode
 }

@@ -1,28 +1,19 @@
-// import controller
 const vocabController = require("../controllers/vocabController")
-// declare the router(route)
-const vocabRoute = (app) =>{
-    // declare API endpoint + method
-    //group 1: all API without ID
+const auth = require("../Middleware/authMiddleware")
+
+const vocabRoute = (app) => {
+    app.get("/api/vocabs/test-vocab", auth, vocabController.testByMode);
+
+    // Group 1: APIs without ID
     app.route('/api/vocabs')
-        .get(vocabController.viewAllVocabs)
-        .post(vocabController.createNewVocab)
-        .delete(vocabController.deleteAllVocab)
+        .get(auth, vocabController.viewAllVocabs)
+        .post(auth, vocabController.createNewVocab)
+        .delete(auth, vocabController.deleteAllVocab)
 
-    // //group 2: all API with ID
+    // Group 2: APIs with ID
     app.route('/api/vocabs/:id')
-        .get(vocabController.getAllVocabById)
-        .put(vocabController.updateVocab)
-        .delete(vocabController.deleteVocabById)
-
-    app.route('/api/vocabs/search:keyword')
-        .get(vocabController.searchVocabByName)
-
-    app.route('/api/vocabs/sort/sortAsc')
-        .get(vocabController.sortVocabAsc)
-
-    app.route('/api/vocabs/sort/sortDesc')
-        .get(vocabController.sortVocabDesc)
+        .get(auth, vocabController.getAllVocabById)
+        .put(auth, vocabController.updateVocab)
+        .delete(auth, vocabController.deleteVocabById)
 }
-// export router
 module.exports = vocabRoute
