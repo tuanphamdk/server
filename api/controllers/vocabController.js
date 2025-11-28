@@ -84,7 +84,7 @@ const testByMode = async(req,res) => {
                 return { id: v._id, question: v.english, answer: v.german };
             }
 
-            // NEW MODES for Vietnamese
+
             if (mode === "english-to-vietnamese") {
                 return { id: v._id, question: v.english, answer: v.vietnamese };
             }
@@ -93,7 +93,14 @@ const testByMode = async(req,res) => {
                 return { id: v._id, question: v.vietnamese, answer: v.english };
             }
 
-            // fallback
+            if (mode === "vietnamese-to-german") {
+                return { id: v._id, question: v.vietnamese, answer: v.german };
+            }
+            if (mode === "german-to-vietnamese") {
+                return { id: v._id, question: v.german, answer: v.vietnamese };
+            }
+
+
             return { id: v._id, question: v.english, answer: v.german };
         });
 
