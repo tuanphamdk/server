@@ -24,7 +24,7 @@ const vocabSchema = mongoose.Schema({
     },
 
     owner :{
-        type: mongoose.Schema.Types.ObjectId, //luu id cua nguoi tao ra no
+        type: mongoose.Schema.Types.ObjectId, 
         ref: "User",
         required: true
     }

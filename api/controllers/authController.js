@@ -5,8 +5,6 @@ const jwt = require("jsonwebtoken")
 const register = async(req,res) => {
     const {username, email, password} = req.body
     
-    
-      // Kiểm tra cơ bản trước khi hash
   if (!username || !email || !password) {
     return res.status(400).json({ error: "Please fill all fields." });
   }
@@ -17,7 +15,7 @@ const register = async(req,res) => {
     return res.status(400).json({ error: "Password must be at least 6 characters." });
   }
     try{
-        const hashed = await bcrypt.hash(password,10) // 10 la salt round, cang cao cang khoe
+        const hashed = await bcrypt.hash(password,10) /
     
         const newUser = await User.create({
             username,
@@ -29,7 +27,7 @@ const register = async(req,res) => {
         console.error(err);
 
         if (err.code === 11000) {
-      const field = Object.keys(err.keyValue)[0]; // username hoặc email
+      const field = Object.keys(err.keyValue)[0]; 
       return res.status(400).json({ error: `${field} already exists.` });
     }
     }
@@ -38,7 +36,7 @@ const register = async(req,res) => {
 const login = async(req,res) => {
     const{email,password} = req.body
     try{
-        const user = await User.findOne({email}) //tim user theo email
+        const user = await User.findOne({email}) 
         if(!user){
             return res.status(400).json({error:"User not found"})
         }
