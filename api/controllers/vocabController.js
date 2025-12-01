@@ -19,7 +19,7 @@ const createNewVocab = async(req,res) =>{
         console.error(err)
     }
 }
-// dùng const để lưu kq khai báo biến
+
 const deleteAllVocab = async(req,res) =>{
     try{
         await vocabModel.deleteMany()
@@ -135,7 +135,6 @@ const testMultipleChoice = async (req, res) => {
             .slice(0, realLimit);
 
         const result = selected.map(vocab => {
-            // Lấy đáp án đúng
             let correctAnswer;
             let question;
             if (mode === "english-to-german") {

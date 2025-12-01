@@ -6,10 +6,10 @@ const app = express()
 const mongoose = require('mongoose')
 
 // OPTION A: LOCAL MONGO
-mongoose.connect("mongodb://localhost:27017/test_vocab")
+// mongoose.connect("mongodb://localhost:27017/test_vocab")
 
 // // OPTION B: CLOUD MONGO (Atlas)
-// mongoose.connect("mongodb+srv://tuanphamdk504:vinh2k30@mydbcluster.fakucer.mongodb.net/vocab_builder")
+mongoose.connect("mongodb+srv://tuanphamdk504:vinh2k30@mydbcluster.fakucer.mongodb.net/test_vocab")
 
 mongoose.connection.once("open", () => console.log("DB connected"))
 mongoose.connection.on("error", err => console.error("DB error:", err))
