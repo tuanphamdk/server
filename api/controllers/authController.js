@@ -4,6 +4,18 @@ const jwt = require("jsonwebtoken")
 
 const register = async(req,res) => {
     const {username, email, password} = req.body
+    
+    
+      // Kiểm tra cơ bản trước khi hash
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Please fill all fields." });
+  }
+  if (username.length < 4) {
+    return res.status(400).json({ error: "Username must be at least 4 characters." });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 characters." });
+  }
     try{
         const hashed = await bcrypt.hash(password,10) // 10 la salt round, cang cao cang khoe
     
@@ -14,7 +26,12 @@ const register = async(req,res) => {
         })
         res.status(201).json({message: "Register successfully"})
     } catch(err){
-        console.error(err)
+        console.error(err);
+
+        if (err.code === 11000) {
+      const field = Object.keys(err.keyValue)[0]; // username hoặc email
+      return res.status(400).json({ error: `${field} already exists.` });
+    }
     }
 }
 

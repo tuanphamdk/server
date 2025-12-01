@@ -118,6 +118,85 @@ const testByMode = async(req,res) => {
 }
 
 
+const testMultipleChoice = async (req, res) => {
+    try {
+        const mode = req.query.mode || "english-to-german";
+        const limit = Number(req.query.limit) || 5;
+
+        const allVocabs = await vocabModel.find({ owner: req.userId });
+
+        if (allVocabs.length === 0) {
+            return res.status(400).json({ error: "You don't have any vocabulary yet." });
+        }
+
+        const realLimit = Math.min(limit, allVocabs.length);
+        const selected = allVocabs
+            .sort(() => Math.random() - 0.5)
+            .slice(0, realLimit);
+
+        const result = selected.map(vocab => {
+            // Lấy đáp án đúng
+            let correctAnswer;
+            let question;
+            if (mode === "english-to-german") {
+                question = vocab.english;
+                correctAnswer = vocab.german;
+            } else if (mode === "german-to-english") {
+                question = vocab.german;
+                correctAnswer = vocab.english;
+            } else if (mode === "english-to-vietnamese") {
+                question = vocab.english;
+                correctAnswer = vocab.vietnamese;
+            } else if (mode === "vietnamese-to-english") {
+                question = vocab.vietnamese;
+                correctAnswer = vocab.english;
+            } else if (mode === "vietnamese-to-german") {
+                question = vocab.vietnamese;
+                correctAnswer = vocab.german;
+            } else if (mode === "german-to-vietnamese") {
+                question = vocab.german;
+                correctAnswer = vocab.vietnamese;
+            }
+
+            const wrongAnswers = allVocabs
+                .filter(v => v._id.toString() !== vocab._id.toString())
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3)
+                .map(v => {
+                    if (mode === "english-to-german") return v.german;
+                    if (mode === "german-to-english") return v.english;
+                    if (mode === "english-to-vietnamese") return v.vietnamese;
+                    if (mode === "vietnamese-to-english") return v.english;
+                    if (mode === "vietnamese-to-german") return v.german;
+                    if (mode === "german-to-vietnamese") return v.vietnamese;
+                });
+
+            const options = [...wrongAnswers, correctAnswer].sort(() => Math.random() - 0.5);
+
+            return {
+                id: vocab._id,
+                question,
+                options,
+                answer: correctAnswer
+            };
+        });
+
+        res.json({
+            requested: limit,
+            returned: result.length,
+            mode,
+            vocabs: result
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+
+
+
 module.exports = {
     viewAllVocabs,
     createNewVocab,
@@ -125,5 +204,6 @@ module.exports = {
     getAllVocabById,
     updateVocab,
     deleteVocabById,
-    testByMode
+    testByMode,
+    testMultipleChoice
 }
