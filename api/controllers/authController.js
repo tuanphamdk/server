@@ -15,7 +15,7 @@ const register = async(req,res) => {
     return res.status(400).json({ error: "Password must be at least 6 characters." });
   }
     try{
-        const hashed = await bcrypt.hash(password,10) /
+        const hashed = await bcrypt.hash(password,10) 
     
         const newUser = await User.create({
             username,
@@ -51,7 +51,7 @@ const login = async(req,res) => {
             username:user.username,
             email:user.email
         },
-        "SECRET_KEY", {expiresIn:"1d"});
+        "SECRET_KEY", {expiresIn:"7d"});
         res.json({token})
     } catch(err){
         res.status(400).json({ error: err.message })
